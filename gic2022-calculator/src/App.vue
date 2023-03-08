@@ -1,15 +1,15 @@
 <template>
-  <div id="calculator">
+  <div id="app">
     <div class="container">
       <table>
         <tr>
           <td colspan="5">
             <div id="screen">
-              <span id="screen_top" v-text="display"></span>
+              <span id="screen_top">M=<span v-text="memory"></span></span>
               <div id="screen_bottom">
-                <span id="operand1" v-text="display_num">0</span>
-                <span id="operator"></span>
-                <span id="operand2"></span>
+                <!-- v-text is a directive that is used to replace the content of HTML tag with private data -->
+                <!-- It will update the content automatically when data is changed. It is called data reactive -->
+                <span v-text="output" id="operand1" >0</span>
               </div>
               <!-- <span id="screen_bottom">0</span> -->
             </div>
@@ -17,242 +17,178 @@
         </tr>
         <tr>
           <td>
-            <button type="button" class="btn btn-warning">MC</button>
+            <button type="button" class="btn btn-warning" v-on:click="mClear()">MC</button>
           </td>
           <td>
-            <button type="button" class="btn btn-warning">MR</button>
+            <button type="button" class="btn btn-warning" v-on:click="mRead()">MR</button>
           </td>
           <td>
-            <button type="button" class="btn btn-warning">M-</button>
+            <button type="button" class="btn btn-warning" v-on:click="mMinus()">M-</button>
           </td>
           <td>
-            <button type="button" class="btn btn-warning">M+</button>
+            <button type="button" class="btn btn-warning" v-on:click="mPlus()">M+</button>
           </td>
           <td>
-            <button @click="clearNumber()" type="button" class="btn btn-light">
+            <button type="button" class="btn btn-light"  v-on:click="backspace()">
               <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
             </button>
           </td>
         </tr>
         <tr>
           <td>
-            <button @click="inputNumber(7)" type="button" class="btn btn-light">
-              7
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('7')">7</button>
           </td>
           <td>
-            <button @click="inputNumber(8)" type="button" class="btn btn-light">
-              8
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('8')">8</button>
           </td>
           <td>
-            <button @click="inputNumber(9)" type="button" class="btn btn-light">
-              9
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('9')">9</button>
           </td>
           <td>
-            <button @click="calculate('div')" type="button" class="btn btn-secondary">
-              ÷
-            </button>
+            <button type="button" class="btn btn-secondary" v-on:click="showOperation(' / ')">÷</button>
           </td>
           <td>
-            <button @click="changeNumber()" type="button" class="btn btn-light">
-              +/-
-            </button>
+            <button type="button" class="btn btn-light">+/-</button>
           </td>
         </tr>
         <tr>
           <td>
-            <button @click="inputNumber(4)" type="button" class="btn btn-light">
-              4
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('4')">4</button>
           </td>
           <td>
-            <button @click="inputNumber(5)" type="button" class="btn btn-light">
-              5
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('5')">5</button>
           </td>
           <td>
-            <button @click="inputNumber(6)" type="button" class="btn btn-light">
-              6
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('6')">6</button>
           </td>
           <td>
-            <button @click="calculate('mul')" type="button" class="btn btn-secondary">
-              x
-            </button>
+            <button type="button" class="btn btn-secondary" v-on:click="showOperation(' * ')">x</button>
           </td>
+          <td>
+            <button type="button" class="btn btn-secondary" v-on:click="showOperation(' - ')">-</button>
+          </td>
+        </tr>
+        <tr>
           <td>
             <button
-              @click="calculate('sub')"
+              v-on:click="showNumber(1)"
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-light"
             >
-              -
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <button @click="inputNumber(1)" type="button" class="btn btn-light">
               1
             </button>
           </td>
           <td>
-            <button v-on:click="inputNumber(2)" type="button" class="btn btn-light">
-              2
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('2')">2</button>
           </td>
           <td>
-            <button v-on:click="inputNumber(3)" type="button" class="btn btn-light">
-              3
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('3')">3</button>
           </td>
           <td rowspan="2">
-            <button @click="calculate('add')" type="button" class="btn btn-secondary long-btn">
-              +
-            </button>
+            <button type="button" class="btn btn-secondary long-btn" v-on:click="showOperation(' + ')">+</button>
           </td>
           <td rowspan="2">
-            <button @click="equal()" type="button" class="btn btn-primary long-btn">
-              =
-            </button>
+            <button type="button" class="btn btn-primary long-btn" v-on:click="$event => calculate()">=</button>
           </td>
         </tr>
         <tr>
           <td>
-            <button @click="clear()" type="button" class="btn btn-danger">
-              C
-            </button>
+            <button type="button" class="btn btn-danger" v-on:click="$event => reset()">C</button>
           </td>
           <td>
-            <button @click="inputNumber(0)" type="button" class="btn btn-light">
-              0
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('0')">0</button>
           </td>
           <td>
-            <button @click="pointNumber()" type="button" class="btn btn-light">
-              .
-            </button>
+            <button type="button" class="btn btn-light" v-on:click="showNumber('.')">.</button>
           </td>
         </tr>
       </table>
     </div>
     <div class="alert alert-danger" id="message_panel" role="alert">
-      something wrong here, Please try again !!
+      something wrong here
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "App",
+  name: 'App',
+  components: {},
   data() {
     return {
-      display_num: 0,
-      display: "",
-      type: "",
-      old_type: "",
-      first_num: 0,
-      result: 0.1,
+      output: "",
+      memory: 0,
     };
   },
   methods: {
-    inputNumber: function (number) {
-      if (typeof this.display_num == "string") {
-        this.display_num = this.display_num + number;
-        console.log(this.display_num);
-      } else {
-        this.display_num = this.display_num * 10 + number;
-        console.log(this.display_num);
+    showNumber(number) {
+      this.output += number;
+    },
+    showOperation( operator ) {
+      this.output += operator;
+    },
+    calculate(){
+      this.output = eval(this.output);
+    },
+    reset () {
+      this.output = "";
+    },
+    mPlus () {
+      this.memory = eval(this.memory + " + " + this.output);
+    },
+    mMinus () {
+      this.memory = eval(this.memory + " - " + this.output);
+    },
+    mRead () {
+      if(this.output[(this.output.length)-2] == "+" || this.output[(this.output.length)-2] == "-" || this.output[(this.output.length)-2] == "*" || this.output[(this.output.length)-2] == "/"){
+        this.output += this.memory;
       }
     },
-    pointNumber: function () {
-      this.display_num = this.display_num + ".";
-      console.log(typeof this.display_num);
+    mClear () {
+      this.memory = 0;
     },
-    calculate: function (type) {
-      if (typeof this.display_num == "string") {
-        this.display_num = parseFloat(this.display_num);
-        this.first_num = this.display_num;
-        this.display = this.first_num.toString();
-        this.display_num = 0;
-      } else if (this.display_num != 0) {
-        this.first_num = this.display_num;
-        this.display = this.first_num.toString();
-        this.display_num = 0;
+    backspace () {
+      if(this.output[(this.output.length)-2] == "+" || this.output[(this.output.length)-2] == "-" || this.output[(this.output.length)-2] == "*" || this.output[(this.output.length)-2] == "/"){
+        this.output = this.output.slice(0, -3);
       }
-      this.old_type = type;
-    },
-    equal: function () {
-      if (typeof this.display_num == "string") {
-        this.display_num = parseFloat(this.display_num);
+      else{
+        this.output = this.output.slice(0, -1);
       }
-      if (this.old_type == "sub") {
-        this.display += " - " + this.display_num.toString() + "=";
-        this.result = this.first_num - this.display_num;
-        this.display_num = this.result;
-      } else if (this.old_type == "add") {
-        this.display += " + " + this.display_num.toString() + "=";
-        this.result = this.first_num + this.display_num;
-        this.display_num = this.result;
-      } else if (this.old_type == "mul") {
-        this.display += " x " + this.display_num.toString() + "=";
-        this.result = this.first_num * this.display_num;
-        this.display_num = this.result;
-      } else if (this.old_type == "div") {
-        this.display += " / " + this.display_num.toString() + "=";
-        this.result = this.first_num / this.display_num;
-        this.display_num = this.result;
-      }
-      this.old_type = "";
-    },
-    changeNumber: function () {
-      if (this.display_num > 0) {
-        this.display_num = this.display_num * -1;
-      } else {
-        this.display_num = this.display_num * -1;
-      }
-    },
-    clearNumber: function () {
-      this.display_num = 0;
-    },
-    clear: function () {
-      this.display_num = 0;
-      this.first_num = 0;
-      this.result = 0;
-      this.display = "";
-    },
+    }
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-@import url("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #304152;
+  margin-top: 65px;
+}
 .container {
   margin-top: 10em;
-  width: 320px;
-  border: 4px solid black;
+  width: 300px;
+  border: 3px solid black;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 table {
-  border-spacing: 10px;
+  border-spacing: 7px;
   border-collapse: separate;
 }
 #screen {
   border: 1px solid black;
   padding: 7px;
-  width: 100%;
+  width: 255px;
   height: 4em;
 }
 #screen_top {
   display: block;
   font-size: 0.8rem;
   font-weight: bold;
-  justify-items: center;
-  text-align: center;
 }
 #screen_bottom {
   font-size: 1.8rem;
@@ -261,9 +197,6 @@ table {
 }
 #operand2 {
   background-color: skyblue;
-}
-#operator {
-  background-color: rosybrown;
 }
 .button-row {
   display: flex;
